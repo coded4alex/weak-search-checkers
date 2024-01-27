@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Board {
 
     @Getter @Setter
-    private ArrayList<Square> squares;
+    private ArrayList<Square> squares = new ArrayList<>();
 
     public static Board newBoard() {
         Board board = new Board();
@@ -29,23 +29,5 @@ public class Board {
         for (int i = 0; i < 4; i++) {
             squares.add(new Square(verticalPosition, i * 2 + offset, piece));
         }
-    }
-
-    private boolean movePiece(Piece piece, Square origin, Square destination) {
-        if (squares.indexOf(origin) == -1) {
-            return false;
-        }
-
-        for (Square sq : squares) {
-            if (sq.getHorizontalPosition() == destination.getHorizontalPosition()
-                    && sq.getVerticalPosition() == destination.getVerticalPosition()) {
-                return false;
-            }
-        }
-
-        squares.remove(origin);
-        squares.add(destination);
-
-        return true;
     }
 }

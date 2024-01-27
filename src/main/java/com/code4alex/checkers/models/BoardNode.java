@@ -10,7 +10,7 @@ import lombok.Setter;
 public class BoardNode {
     public Board board;
     public int score;
-    public int exhaustion;
+    public int moveNumber;
     public boolean pruned;
     public ArrayList<BoardNode> treeNodes;
 

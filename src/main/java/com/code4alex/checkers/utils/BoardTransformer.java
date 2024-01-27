@@ -1,6 +1,4 @@
-package com.code4alex.checkers.services;
-
-import org.springframework.stereotype.Service;
+package com.code4alex.checkers.utils;
 
 import com.code4alex.checkers.models.Board;
 import com.code4alex.checkers.models.Piece;
@@ -8,9 +6,8 @@ import com.code4alex.checkers.models.Square;
 
 import lombok.val;
 
-@Service
-public class BoardTransformerService {
-    public Piece[][] sparseToDenseBoard(Board board) {
+public class BoardTransformer {
+    public Piece[][] denseToSparseBoard(Board board) {
         Piece denseBoard[][] = new Piece[8][8];
         for (val square : board.getSquares()) {
             denseBoard[square.getVerticalPosition()][square.getHorizontalPosition()] = square.getPiece();
@@ -19,7 +16,7 @@ public class BoardTransformerService {
         return denseBoard;
     }
 
-    public Board denseToSparseBoard(Piece denseBoard[][]) {
+    public Board sparseToDenseBoard(Piece denseBoard[][]) {
         val sparseBoard = new Board();
         val sparseBoardArray = sparseBoard.getSquares();
 
