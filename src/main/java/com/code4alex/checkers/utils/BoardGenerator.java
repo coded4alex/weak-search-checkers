@@ -12,17 +12,20 @@ import lombok.val;
 public class BoardGenerator {
     BoardTransformer boardTransformer = new BoardTransformer();
 
-    public ArrayList<BoardNode> generateFutureBoardNodes(BoardNode boardNode, Piece movePiece) {
+    public ArrayList<BoardNode> generateFutureBoardNodes(BoardNode boardNode, Piece piece) {
         val board = boardNode.getBoard();
         ArrayList<BoardNode> returnList = new ArrayList<>();
         Piece sparseBoard[][] = boardTransformer.denseToSparseBoard(board);
 
         for (val square : board.getSquares()) {
-            returnList.addAll(movePiece(sparseBoard, square, false));
+            if(!square.getPiece().isOpposite(piece)) {
+                returnList.addAll(movePiece(sparseBoard, square, false));
+            }
         }
 
         for (val retVal : returnList) {
             retVal.setMoveNumber(boardNode.getMoveNumber() + 1);
+            retVal.setNextPiece(piece.getOppositPiece());
         }
 
         return returnList;
@@ -47,11 +50,12 @@ public class BoardGenerator {
         val hPos = square.getHorizontalPosition();
         val vPos = square.getVerticalPosition();
 
-        if (vPos < 8 && vPos >= 0 && hPos < 8 && hPos >= 0) {
+        if (checkRange(hPos, vPos)) {
             if (!doubleJump && checkIfSquareIsEmpty(sparseBoard, vPos + verticalMoveModifier, hPos + horizontalMoveModifier)) {
                 Piece tempBoard[][] = boardTransformer.copySparseBoard(sparseBoard);
                 tempBoard[vPos + verticalMoveModifier][hPos + horizontalMoveModifier] = square.getPiece();
                 tempBoard[vPos][hPos] = null;
+                createKings(tempBoard);
 
                 val node = boardTransformer.sparseToDenseBoard(tempBoard);
                 val boardNode = BoardNode.builder()
@@ -68,6 +72,7 @@ public class BoardGenerator {
                 tempBoard[vPos + verticalMoveModifier * 2][hPos + horizontalMoveModifier * 2] = square.getPiece();
                 tempBoard[vPos + verticalMoveModifier][hPos + horizontalMoveModifier] = null;
                 tempBoard[vPos][hPos] = null;
+                createKings(tempBoard);
 
                 val node = boardTransformer.sparseToDenseBoard(tempBoard);
                 val boardNode = BoardNode.builder()
@@ -86,8 +91,19 @@ public class BoardGenerator {
         return returnList;
     }
 
+    private void createKings(Piece sparseBoard[][]) {
+        for(int i=0;i<8;i++) {
+            if(sparseBoard[0][i] == Piece.WHITE) {
+                sparseBoard[0][i] = Piece.WHITE_KING;
+            }
+            if(sparseBoard[7][i] == Piece.BLACK) {
+                sparseBoard[7][i] = Piece.BLACK_KING;
+            }
+        }
+    }
+
     private boolean checkIfSquareIsOpposite(Piece sparseBoard[][], Piece piece, int vpos, int hpos) {
-        if(vpos < 8 && hpos >= 0 && sparseBoard[vpos][hpos] != null && sparseBoard[vpos][hpos].isOpposite(piece)) {
+        if(checkRange(vpos, hpos) && sparseBoard[vpos][hpos] != null && sparseBoard[vpos][hpos].isOpposite(piece)) {
             return true;
         } else {
             return false;
@@ -95,10 +111,16 @@ public class BoardGenerator {
     }
 
     private boolean checkIfSquareIsEmpty(Piece sparseBoard[][], int vpos, int hpos) {
-        if(vpos < 8 && hpos >= 0 && sparseBoard[vpos][hpos] == null) {
+        if(checkRange(vpos, hpos) && sparseBoard[vpos][hpos] == null) {
             return true;
         } else {
             return false;
         }
+    }
+
+    private boolean checkRange(int x, int y) {
+        if(x<=7 && x>=0 && y<=7 && y>=0)
+            return true;
+        return false;
     }
 }

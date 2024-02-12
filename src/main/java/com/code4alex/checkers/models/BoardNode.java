@@ -8,13 +8,15 @@ import lombok.Setter;
 
 @Builder @Getter @Setter
 public class BoardNode {
-    public Board board;
-    public int score;
-    public int moveNumber;
-    public boolean pruned;
-    public ArrayList<BoardNode> treeNodes;
+    private Board board;
+    private int score;
+    private int moveNumber;
+    private boolean pruned;
+    @Builder.Default
+    private Piece nextPiece = Piece.WHITE;
+    private ArrayList<BoardNode> treeNodes;
 
-    synchronized public void addNode(BoardNode boardNode) {
-        treeNodes.add(boardNode);
+    synchronized public void addNodes(ArrayList<BoardNode> boardNodes) {
+        treeNodes.addAll(boardNodes);
     }
 }

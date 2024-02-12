@@ -10,4 +10,10 @@ public enum Piece {
             return true;
         return false;
     }
+
+    public Piece getOppositPiece() {
+        if(this == WHITE || this == WHITE_KING)
+            return BLACK;
+        return WHITE;
+    }
 }
